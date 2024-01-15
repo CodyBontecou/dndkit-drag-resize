@@ -29,6 +29,7 @@ interface Props {
   buttonStyle?: React.CSSProperties
   transform?: Transform | null
   resizable?: boolean
+  onResize: any
 }
 
 export const Draggable = forwardRef<HTMLButtonElement, Props>(
@@ -44,11 +45,16 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
       style,
       buttonStyle,
       resizable,
+      onResize,
       ...props
     },
     ref
   ) {
-    const [size, setSize] = useState({ width: 200, height: 200 })
+    console.log(style)
+    const [size, setSize] = useState({
+      width: style?.width || 200,
+      height: style?.height || 200,
+    })
     const [isResizing, setIsResizing] = useState(false)
     const [startSize, setStartSize] = useState({ width: 0, height: 0 })
     const [startPos, setStartPos] = useState({ x: 0, y: 0 })
@@ -74,6 +80,7 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
 
     const handleMouseUp = () => {
       setIsResizing(false)
+      onResize && onResize(size) // Call onResize when resizing ends
     }
 
     useEffect(() => {
@@ -89,7 +96,13 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
         window.removeEventListener('mousemove', handleMouseMove)
         window.removeEventListener('mouseup', handleMouseUp)
       }
-    }, [isResizing, handleMouseMove])
+    }, [isResizing, handleMouseMove, handleMouseUp])
+
+    useEffect(() => {
+      if (style?.width && style?.height) {
+        setSize({ width: style.width, height: style.height })
+      }
+    }, [style])
 
     return (
       <div
