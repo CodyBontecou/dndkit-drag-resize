@@ -12,13 +12,11 @@ import {
   useDraggable,
   UniqueIdentifier,
 } from '@dnd-kit/core'
-
 import { restrictToWindowEdges } from '@dnd-kit/modifiers'
-
-import { useState } from 'react'
 
 import { Coordinates } from '@dnd-kit/utilities'
 import { Draggable, OverflowWrapper } from '@/components'
+import useLocalStorage from '@/lib/useLocalStorage'
 
 interface Props {
   activationConstraint?: PointerActivationConstraint
@@ -44,7 +42,7 @@ const DraggableStory = ({
   style,
   buttonStyle,
 }: Props) => {
-  const [items, setItems] = useState(objList)
+  const [items, setItems] = useLocalStorage('costream-layout', objList)
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint,
   })
@@ -126,8 +124,6 @@ function DraggableItem({
 }: DraggableItemProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform } =
     useDraggable({ id })
-
-  console.log('tl: ', top, left)
 
   return (
     <Draggable
